@@ -231,8 +231,8 @@
       { q:'真人客服服務時間', kw:'真人 客服 時間', a:'真人客服服務時間為週一至週五 09:00–18:00。' }
     ];
     var cases = [
-      { id:'11111111-1111-4111-8111-111111111111', subject:'想確認企業方案能否串接會員系統', status:'open', assigned_to:'', updated_at:new Date(now - 8 * 60000).toISOString(), message_count:4 },
-      { id:'22222222-2222-4222-8222-222222222222', subject:'預約下週產品展示', status:'assigned', assigned_to:'user_local_preview', updated_at:new Date(now - 25 * 60000).toISOString(), message_count:7 }
+      { id:'11111111-1111-4111-8111-111111111111', subject:'想確認企業方案能否串接會員系統', status:'open', priority:'high', assigned_to:'', created_at:new Date(now - 7 * 3600000).toISOString(), updated_at:new Date(now - 8 * 60000).toISOString(), sla_due_at:new Date(now + 3600000).toISOString(), message_count:4 },
+      { id:'22222222-2222-4222-8222-222222222222', subject:'預約下週產品展示', status:'assigned', priority:'normal', assigned_to:'user_local_preview', created_at:new Date(now - 25 * 3600000).toISOString(), updated_at:new Date(now - 25 * 60000).toISOString(), first_response_at:new Date(now - 22 * 3600000).toISOString(), sla_due_at:new Date(now - 60 * 60000).toISOString(), message_count:7 }
     ];
     var leads = [
       { id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', name:'陳怡君', contact:'yijun@example.com', company:'春日設計', request:'希望了解企業方案與導入時間', status:'new', source_page:'https://example.com/pricing', consented_at:new Date(now - 45 * 60000).toISOString(), created_at:new Date(now - 45 * 60000).toISOString(), assigned_to:'', admin_note:'' },
@@ -276,6 +276,7 @@
       ] };
     }
     if (url.pathname === '/api/admin/support') {
+      if (url.searchParams.get('summary') === '1') return { summary:{ active_cases:2, priority_cases:1, overdue_cases:0 } };
       var supportStatus = url.searchParams.get('status') || 'active';
       return { cases:data.cases.filter(function (item) { return supportStatus === 'active' ? item.status !== 'resolved' : item.status === supportStatus; }) };
     }
@@ -448,18 +449,21 @@
     updateInstallCode();
     var results = await Promise.allSettled([
       api('/api/admin/leads?site=' + encodeURIComponent(siteId) + '&status=new&search='),
-      api('/api/admin/support?site=' + encodeURIComponent(siteId) + '&status=active'),
+      api('/api/admin/support?site=' + encodeURIComponent(siteId) + '&summary=1'),
       loadDashboardHealth()
     ]);
     var leads = results[0].status === 'fulfilled' && Array.isArray(results[0].value.leads) ? results[0].value.leads.length : '—';
-    var support = results[1].status === 'fulfilled' && Array.isArray(results[1].value.cases) ? results[1].value.cases.length : '—';
+    var summary = results[1].status === 'fulfilled' && results[1].value.summary;
+    var support = summary && Number.isFinite(Number(summary.active_cases)) ? summary.active_cases : '—';
     document.getElementById('dashboard-lead-count').textContent = leads;
     document.getElementById('dashboard-support-count').textContent = support;
+    document.getElementById('dashboard-support-sla').textContent = summary ? ('高／緊急 ' + Number(summary.priority_cases || 0) + ' 件・逾期 ' + Number(summary.overdue_cases || 0) + ' 件') : '客服 SLA 摘要暫時無法取得';
   }
 
   function resetWorkspaceView() {
     ['dashboard-sessions','dashboard-questions','dashboard-fallback','dashboard-handoffs','dashboard-lead-count','dashboard-support-count','metric-sessions','metric-questions','metric-fallback','metric-handoffs']
       .forEach(function (id) { var element = document.getElementById(id); if (element) element.textContent = '—'; });
+    document.getElementById('dashboard-support-sla').textContent = '查看未接手與處理中的對話';
     dashboardState('dashboard-health', '檢查中', '');
     dashboardState('dashboard-avatar-state', '載入中', '');
     dashboardState('dashboard-knowledge-state', '載入中', '');
@@ -480,7 +484,7 @@
     var editable = canEditSite();
     document.getElementById('readonly-banner').hidden = editable || LOCAL_PREVIEW;
     editor.readOnly = !editable;
-    ['save','publish','import-url','import-text','source-file','file','support-assign','support-resolve','support-reopen','support-reply','support-send','support-note','lead-status-select','lead-note','lead-update','lead-delete','avatar-save','avatar-publish']
+    ['save','publish','import-url','import-text','source-file','file','support-assign','support-resolve','support-reopen','support-priority','support-reply','support-send','support-note','lead-status-select','lead-note','lead-update','lead-delete','avatar-save','avatar-publish']
       .forEach(function (id) { var element = document.getElementById(id); if (element) element.disabled = !editable; });
     document.querySelectorAll('.avatar-settings input,.avatar-settings select,.avatar-settings textarea').forEach(function (element) { element.disabled = !editable; });
     document.getElementById('site-management').hidden = !canOwnSite();
@@ -824,6 +828,16 @@
     return value === 'assigned' ? '處理中' : (value === 'resolved' ? '已結案' : '未接手');
   }
 
+  function supportPriorityLabel(value) {
+    return value === 'urgent' ? '緊急' : (value === 'high' ? '高' : (value === 'low' ? '低' : '一般'));
+  }
+
+  function supportSlaLabel(item) {
+    if (item.first_response_at) return '首次回覆 ' + formatDate(item.first_response_at);
+    if (!item.sla_due_at) return '首次回覆 SLA 尚未設定';
+    return new Date(item.sla_due_at).getTime() < Date.now() ? '首次回覆 SLA 已逾期' : '首次回覆 SLA 截止 ' + formatDate(item.sla_due_at);
+  }
+
   function renderSupportList(items) {
     supportList.replaceChildren();
     if (!items.length) { var empty = document.createElement('p'); empty.style.padding = '14px'; empty.textContent = '這個篩選條件下沒有案件。'; supportList.appendChild(empty); return; }
@@ -831,8 +845,10 @@
       var button = document.createElement('button'); button.type = 'button'; button.className = 'case-item' + (item.id === selectedSupportId ? ' active' : '');
       var title = document.createElement('strong'); title.textContent = item.subject || '需要真人客服協助';
       var badge = document.createElement('span'); badge.className = 'case-status ' + item.status; badge.textContent = supportStatusLabel(item.status);
+      var priority = document.createElement('span'); priority.className = 'case-priority ' + (item.priority || 'normal'); priority.textContent = supportPriorityLabel(item.priority);
       var meta = document.createElement('span'); meta.textContent = '#' + item.id.slice(0, 8) + ' · ' + formatDate(item.updated_at) + ' · ' + formatNumber(item.message_count) + ' 則';
-      button.append(title, badge, meta); button.onclick = function () { selectSupport(item.id); }; supportList.appendChild(button);
+      var sla = document.createElement('span'); sla.textContent = supportSlaLabel(item);
+      button.append(title, badge, priority, meta, sla); button.onclick = function () { selectSupport(item.id); }; supportList.appendChild(button);
     });
   }
 
@@ -840,7 +856,7 @@
     var item = state.case;
     selectedSupportId = item.id;
     document.getElementById('support-subject').textContent = item.subject || '需要真人客服協助';
-    document.getElementById('support-meta').textContent = '#' + item.id.slice(0, 8) + ' · ' + supportStatusLabel(item.status) + (item.assigned_to ? ' · 處理者 ' + item.assigned_to : '');
+    document.getElementById('support-meta').textContent = '#' + item.id.slice(0, 8) + ' · ' + supportStatusLabel(item.status) + ' · ' + supportPriorityLabel(item.priority) + '優先 · ' + supportSlaLabel(item) + (item.assigned_to ? ' · 處理者 ' + item.assigned_to : '');
     document.getElementById('support-assign').hidden = item.status !== 'open';
     document.getElementById('support-resolve').hidden = item.status === 'resolved';
     document.getElementById('support-reopen').hidden = item.status !== 'resolved';
@@ -850,6 +866,8 @@
     document.getElementById('support-assign').disabled = !canEditSite();
     document.getElementById('support-resolve').disabled = !canEditSite();
     document.getElementById('support-reopen').disabled = !canEditSite();
+    document.getElementById('support-priority').value = item.priority || 'normal';
+    document.getElementById('support-priority').disabled = !canEditSite();
     supportMessages.replaceChildren();
     (state.messages || []).forEach(function (message) {
       var box = document.createElement('div'); box.className = 'support-message ' + message.sender;
@@ -893,10 +911,10 @@
     if ((action === 'reply' || action === 'note') && !reply.value.trim()) { document.getElementById('support-status').textContent = '請先輸入訊息。'; return; }
     supportBusy = true;
     try {
-      var state = await api('/api/admin/support', { method:'POST', body:JSON.stringify({ siteId:siteId, caseId:selectedSupportId, action:action, body:reply.value }) });
+      var state = await api('/api/admin/support', { method:'POST', body:JSON.stringify({ siteId:siteId, caseId:selectedSupportId, action:action, body:reply.value, priority:document.getElementById('support-priority').value }) });
       if (action === 'reply' || action === 'note') reply.value = '';
       renderSupportCase(state); await loadSupport(); await loadDashboardQueues();
-      document.getElementById('support-status').textContent = action === 'reply' ? '回覆已傳送。' : (action === 'note' ? '內部備註已新增。' : '案件狀態已更新。');
+      document.getElementById('support-status').textContent = action === 'reply' ? '回覆已傳送，首次回覆 SLA 已記錄。' : (action === 'note' ? '內部備註已新增。' : (action === 'set_priority' ? '優先級與未回覆案件的 SLA 已更新。' : '案件狀態已更新。'));
     } catch (error) { document.getElementById('support-status').textContent = error.message; }
     finally { supportBusy = false; }
   }
@@ -1140,7 +1158,7 @@
     document.getElementById('preview-banner').hidden = false;
     var userButton = document.getElementById('user-button'); userButton.textContent = '本機預覽'; userButton.className = 'badge live';
     if (await loadSites('demo-store')) await loadWorkspace();
-    ['site-update','site-create-button','member-add-button','site-key-rotate','lead-update','lead-delete','support-assign','support-resolve','support-reopen','support-send','support-note']
+    ['site-update','site-create-button','member-add-button','site-key-rotate','lead-update','lead-delete','support-assign','support-resolve','support-reopen','support-priority','support-send','support-note']
       .forEach(function (id) { var element = document.getElementById(id); if (element) { element.disabled = true; element.title = '本機預覽模式不會寫入資料'; } });
     document.querySelectorAll('.member-row select,.member-row button').forEach(function (element) { element.disabled = true; });
   }
@@ -1173,6 +1191,7 @@
   document.getElementById('support-reopen').onclick = function () { supportAction('reopen'); };
   document.getElementById('support-send').onclick = function () { supportAction('reply'); };
   document.getElementById('support-note').onclick = function () { supportAction('note'); };
+  document.getElementById('support-priority').onchange = function () { supportAction('set_priority'); };
   document.getElementById('leads-refresh').onclick = loadLeads;
   document.getElementById('leads-filter').onchange = function () { selectedLeadId = ''; loadLeads(); };
   document.getElementById('leads-search').oninput = function () { clearTimeout(leadSearchTimer); leadSearchTimer = setTimeout(function () { selectedLeadId = ''; loadLeads(); }, 320); };

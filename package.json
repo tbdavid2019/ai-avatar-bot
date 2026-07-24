@@ -7,7 +7,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "test": "node tests/tool-router.test.js && node tests/avatar-config.test.js && node tests/lead-store.test.js && node tests/site-auth.test.js && node tests/security.test.js && node tests/tenant-contract.test.js && node tests/handoff-api.test.js && node tests/admin-dashboard.test.js && node tests/model-resilience.test.js && node tests/safe-url.test.js && node tests/tts-security.test.js && node tests/retention.test.js",
+    "test": "node tests/tool-router.test.js && node tests/avatar-config.test.js && node tests/lead-store.test.js && node tests/site-auth.test.js && node tests/security.test.js && node tests/tenant-contract.test.js && node tests/handoff-api.test.js && node tests/admin-dashboard.test.js && node tests/model-resilience.test.js && node tests/safe-url.test.js && node tests/tts-security.test.js && node tests/retention.test.js && node tests/support-sla.test.js && node tests/support-api.test.js",
     "test:e2e": "playwright test"
   },
   "dependencies": {

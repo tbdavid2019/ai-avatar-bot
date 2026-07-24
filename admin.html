@@ -119,12 +119,17 @@
     .case-status { border-radius:999px; padding:2px 7px; background:#fff0d6; color:#8a5b13!important; font-weight:800; }
     .case-status.assigned { background:#e8e7ff; color:var(--brand-dark)!important; }
     .case-status.resolved { background:#e4f5ed; color:var(--ok)!important; }
+    .case-priority { border-radius:999px; padding:2px 7px; background:#eef0f5; color:#5d5e72!important; font-weight:800; }
+    .case-priority.high { background:#fff0d6; color:#8a5b13!important; }
+    .case-priority.urgent { background:#fde4e4; color:var(--bad)!important; }
     .support-detail { min-width:0; display:grid; grid-template-rows:auto minmax(240px,1fr) auto; }
     .support-detail-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:13px; border-bottom:1px solid var(--line); }
     .support-detail-head h3 { margin:0 0 4px; font-size:15px; overflow-wrap:anywhere; }
     .support-detail-head span { color:var(--muted); font-size:11px; }
     .support-case-actions { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
     .support-case-actions button { min-height:32px; padding:0 10px; font-size:11px; }
+    .support-priority-control { display:flex; gap:5px; align-items:center; color:var(--muted); font-size:11px; }
+    .support-priority-control select { min-height:32px; border:1px solid var(--line); border-radius:9px; padding:0 26px 0 8px; background:#fff; color:var(--ink); font:inherit; }
     .support-messages { padding:13px; display:flex; flex-direction:column; gap:9px; overflow:auto; max-height:420px; background:#fdfdff; }
     .support-message { max-width:82%; border-radius:13px; padding:9px 11px; background:#eeeeF7; font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
     .support-message.visitor { align-self:flex-start; }
@@ -390,7 +395,7 @@
       <div class="dashboard-section-title"><div><h2>今日工作台</h2><p>先處理需要人工介入的項目</p></div></div>
       <div class="dashboard-grid">
         <section class="dashboard-card"><div class="dashboard-card-head"><h2>待處理項目</h2><span class="badge">即時</span></div><div class="dashboard-queue">
-          <button class="dashboard-queue-item" type="button" data-go-page="support"><span class="queue-dot"></span><span><strong>真人客服案件</strong><span>查看未接手與處理中的對話</span></span><span id="dashboard-support-count" class="queue-count">—</span></button>
+          <button class="dashboard-queue-item" type="button" data-go-page="support"><span class="queue-dot"></span><span><strong>真人客服案件</strong><span id="dashboard-support-sla">查看未接手與處理中的對話</span></span><span id="dashboard-support-count" class="queue-count">—</span></button>
           <button class="dashboard-queue-item" type="button" data-go-page="leads"><span class="queue-dot purple"></span><span><strong>新潛在客戶</strong><span>追蹤尚未聯絡的詢價與預約</span></span><span id="dashboard-lead-count" class="queue-count">—</span></button>
         </div></section>
         <section class="dashboard-card"><div class="dashboard-card-head"><h2>系統狀態</h2><button id="dashboard-health-refresh" type="button">重新檢查</button></div><div class="system-list">
@@ -578,7 +583,7 @@
         <section class="support-detail" aria-label="客服對話">
           <div class="support-detail-head">
             <div><h3 id="support-subject">請選擇案件</h3><span id="support-meta">選擇左側案件後即可接手與回覆。</span></div>
-            <div class="support-case-actions"><button id="support-assign" type="button" hidden>接手</button><button id="support-resolve" class="publish" type="button" hidden>結案</button><button id="support-reopen" type="button" hidden>重新開啟</button></div>
+            <div class="support-case-actions"><label class="support-priority-control" for="support-priority">優先級<select id="support-priority" disabled><option value="low">低</option><option value="normal">一般</option><option value="high">高</option><option value="urgent">緊急</option></select></label><button id="support-assign" type="button" hidden>接手</button><button id="support-resolve" class="publish" type="button" hidden>結案</button><button id="support-reopen" type="button" hidden>重新開啟</button></div>
           </div>
           <div id="support-messages" class="support-messages"><p>尚未選擇客服案件。</p></div>
           <div class="support-compose">

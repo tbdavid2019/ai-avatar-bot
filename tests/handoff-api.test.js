@@ -6,11 +6,12 @@ const supportPath = require.resolve('../lib/support-store');
 const sitePath = require.resolve('../lib/site-store');
 let visitorArgs;
 let messageArgs;
+let createArgs;
 
 require.cache[supportPath] = {
   id:supportPath, filename:supportPath, loaded:true,
   exports:{
-    createCase:async (input) => input,
+    createCase:async (input) => { createArgs = input; return input; },
     visitorCase:async (...args) => { visitorArgs = args; return { case:{ id:args[1] }, messages:[] }; },
     addVisitorMessage:async (input) => { messageArgs = input; return { case:{ id:input.caseId }, messages:[] }; }
   }
@@ -43,6 +44,14 @@ function response() {
   }, postRes);
   assert.equal(postRes.statusCode, 200);
   assert.deepEqual(messageArgs, { siteId:'brand_b', caseId:'case-b', accessToken:'visitor-token', body:'hello' });
+
+  const createRes = response();
+  await handoff({
+    method:'POST', headers:{}, query:{}, socket:{ remoteAddress:'127.0.0.1' },
+    body:{ siteId:'Brand_B', sessionId:'visitor-session', subject:'Need help', history:[], priority:'urgent' }
+  }, createRes);
+  assert.equal(createRes.statusCode, 201);
+  assert.deepEqual(createArgs, { siteId:'brand_b', sessionId:'visitor-session', subject:'Need help', history:[] });
 
   console.log('handoff API tests passed');
 })().catch((error) => { console.error(error); process.exitCode = 1; });

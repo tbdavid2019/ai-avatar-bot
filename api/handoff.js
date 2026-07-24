@@ -38,7 +38,12 @@ module.exports = async (req, res) => {
     }
     if (body.action && body.action !== 'create') return json(res, 400, { error:'不支援的客服操作。' });
     if (!allowed('create:' + String(body.sessionId || ''), 3)) return json(res, 429, { error:'建立客服案件太頻繁，請稍後再試。' });
-    return json(res, 201, await createCase(Object.assign({}, body, { siteId:access.siteId })));
+    return json(res, 201, await createCase({
+      siteId:access.siteId,
+      sessionId:body.sessionId,
+      subject:body.subject,
+      history:body.history
+    }));
   } catch (error) {
     console.warn('[handoff]', error && error.message || error);
     const status = error.status || (error instanceof SyntaxError ? 400 : 500);
