@@ -16,6 +16,10 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# browser-test artifacts
+test-results/
+playwright-report/
+
 # scratch / generated audio
 *.mp3
 _test_*.js

@@ -1,0 +1,12 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Widget E2E fixture</title>
+<body data-ready="false">fixture</body>
+<script>
+  window.parent.postMessage({ ns:'avatar-widget', type:'ready' }, location.origin);
+  document.body.dataset.ready = 'true';
+  window.addEventListener('message', function (event) {
+    if (event.origin !== location.origin || !event.data || event.data.ns !== 'avatar-widget-host') return;
+    document.body.dataset.lastMessage = event.data.type || '';
+  });
+</script>

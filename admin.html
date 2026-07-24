@@ -204,7 +204,8 @@
     .admin-nav button { min-height:44px; width:100%; padding:0 12px; justify-content:flex-start; gap:11px; border-radius:12px; background:transparent; color:#bfc1d7; font-size:13px; font-weight:750; }
     .admin-nav button:hover { background:#22243b; color:#fff; }
     .admin-nav button[aria-current="page"] { background:#302e5a; color:#fff; box-shadow:inset 3px 0 0 #8b85ff; }
-    .admin-nav-icon { width:26px; height:26px; border-radius:8px; display:grid; place-items:center; background:rgba(255,255,255,.07); color:#d6d5ff; font-size:10px; font-weight:900; }
+    .admin-nav-icon { width:26px; height:26px; border-radius:8px; display:grid; place-items:center; background:rgba(255,255,255,.07); color:#d6d5ff; }
+    .admin-nav-icon svg,.dashboard-metric-icon svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.8; }
     .admin-sidebar-footer { margin-top:auto; padding:14px 10px 0; border-top:1px solid rgba(255,255,255,.08); }
     .admin-sidebar-footer a { display:flex; align-items:center; gap:8px; color:#bfc1d7; text-decoration:none; font-size:12px; }
     .admin-sidebar-footer a:hover { color:#fff; }
@@ -231,7 +232,7 @@
     .dashboard-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
     .dashboard-metric { min-width:0; padding:17px; border:1px solid #e2e3ed; border-radius:15px; background:#fff; }
     .dashboard-metric-head { display:flex; justify-content:space-between; gap:8px; color:var(--muted); font-size:11px; font-weight:750; }
-    .dashboard-metric-icon { width:29px; height:29px; border-radius:9px; display:grid; place-items:center; background:#ecebff; color:var(--brand-dark); font-size:10px; font-weight:900; }
+    .dashboard-metric-icon { width:29px; height:29px; border-radius:9px; display:grid; place-items:center; background:#ecebff; color:var(--brand-dark); }
     .dashboard-metric strong { display:block; margin:15px 0 5px; font-size:28px; line-height:1; }
     .dashboard-metric small { color:var(--muted); font-size:10px; }
     .dashboard-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr); gap:14px; }
@@ -351,17 +352,17 @@
         <div>
           <div class="admin-nav-label">Workspace</div>
           <nav class="admin-nav">
-            <button type="button" data-nav-page="overview" aria-current="page"><span class="admin-nav-icon">OV</span>總覽</button>
-            <button type="button" data-nav-page="avatar"><span class="admin-nav-icon">AV</span>虛擬人設定</button>
-            <button type="button" data-nav-page="knowledge"><span class="admin-nav-icon">KB</span>知識庫</button>
-            <button type="button" data-nav-page="support"><span class="admin-nav-icon">CS</span>真人客服</button>
-            <button type="button" data-nav-page="leads"><span class="admin-nav-icon">LD</span>潛在客戶</button>
-            <button type="button" data-nav-page="analytics"><span class="admin-nav-icon">AN</span>使用分析</button>
-            <button type="button" data-nav-page="install"><span class="admin-nav-icon">IN</span>安裝精靈</button>
-            <button type="button" data-nav-page="settings" data-owner-only><span class="admin-nav-icon">ST</span>網站與成員</button>
+            <button type="button" data-nav-page="overview" aria-current="page"><span class="admin-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="8" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="15" width="7" height="6" rx="1"/></svg></span>總覽</button>
+            <button type="button" data-nav-page="avatar"><span class="admin-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M8 12h.01M16 12h.01M9 16h6"/></svg></span>虛擬人設定</button>
+            <button type="button" data-nav-page="knowledge"><span class="admin-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 5.5v16"/></svg></span>知識庫</button>
+            <button type="button" data-nav-page="support"><span class="admin-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M18 19c0 1.1-.9 2-2 2h-4"/><rect x="2" y="13" width="4" height="6" rx="2"/><rect x="18" y="13" width="4" height="6" rx="2"/></svg></span>真人客服</button>
+            <button type="button" data-nav-page="leads"><span class="admin-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>潛在客戶</button>
+            <button type="button" data-nav-page="analytics"><span class="admin-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>使用分析</button>
+            <button type="button" data-nav-page="install"><span class="admin-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1-1.5 2.5 0 3.5s3 1 4.5 0L18 11l-5-5-9 9c-1.5 1-1.5 2.5.5 3.5"/><path d="m9 20 3-3M14 5l5 5"/></svg></span>安裝精靈</button>
+            <button type="button" data-nav-page="settings" data-owner-only><span class="admin-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2 2-.06-.06A1.7 1.7 0 0 0 15.86 19a1.7 1.7 0 0 0-1.03 1.55V21h-2.83v-.45A1.7 1.7 0 0 0 10.97 19a1.7 1.7 0 0 0-1.88-.34l-.06.06-2-2 .06-.06A1.7 1.7 0 0 0 7 14.78 1.7 1.7 0 0 0 5.45 13.75H5V10.9h.45A1.7 1.7 0 0 0 7 9.87a1.7 1.7 0 0 0 .34-1.88l-.06-.06 2-2 .06.06A1.7 1.7 0 0 0 11.22 6 1.7 1.7 0 0 0 12.25 4.45V4h2.83v.45A1.7 1.7 0 0 0 16.11 6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2 2-.06.06A1.7 1.7 0 0 0 19.65 9.54 1.7 1.7 0 0 0 21.2 10.57h.45v2.86h-.45A1.7 1.7 0 0 0 19.4 15z"/></svg></span>網站與成員</button>
           </nav>
         </div>
-        <div class="admin-sidebar-footer"><a href="./"><span class="admin-nav-icon">↗</span>查看示範網站</a></div>
+        <div class="admin-sidebar-footer"><a href="./"><span class="admin-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg></span>查看示範網站</a></div>
       </aside>
       <div class="admin-main">
         <header class="admin-topbar">
@@ -381,10 +382,10 @@
       </div>
       <div class="dashboard-section-title"><div><h2 id="dashboard-period-label">最近 30 天</h2><p>資料會隨上方選擇的網站切換</p></div><button type="button" data-go-page="analytics">查看完整分析</button></div>
       <div class="dashboard-metrics">
-        <div class="dashboard-metric"><div class="dashboard-metric-head"><span>對話工作階段</span><span class="dashboard-metric-icon">SE</span></div><strong id="dashboard-sessions">—</strong><small>匿名工作階段</small></div>
-        <div class="dashboard-metric"><div class="dashboard-metric-head"><span>收到問題</span><span class="dashboard-metric-icon">QU</span></div><strong id="dashboard-questions">—</strong><small>訪客主動提出的問題</small></div>
-        <div class="dashboard-metric"><div class="dashboard-metric-head"><span>知識未命中率</span><span class="dashboard-metric-icon">KB</span></div><strong id="dashboard-fallback">—</strong><small>可用來安排知識補強</small></div>
-        <div class="dashboard-metric"><div class="dashboard-metric-head"><span>轉真人需求</span><span class="dashboard-metric-icon">CS</span></div><strong id="dashboard-handoffs">—</strong><small>需要人工協助的對話</small></div>
+        <div class="dashboard-metric"><div class="dashboard-metric-head"><span>對話工作階段</span><span class="dashboard-metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 10h10M7 14h6"/><path d="M20 11.5a7.5 7.5 0 0 1-8 7.48L7 21v-2.7A7.5 7.5 0 1 1 20 11.5z"/></svg></span></div><strong id="dashboard-sessions">—</strong><small>匿名工作階段</small></div>
+        <div class="dashboard-metric"><div class="dashboard-metric-head"><span>收到問題</span><span class="dashboard-metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 1 1 5.65 1.4c-.85 1.1-2.75 1.45-2.75 3.1M12 17h.01"/></svg></span></div><strong id="dashboard-questions">—</strong><small>訪客主動提出的問題</small></div>
+        <div class="dashboard-metric"><div class="dashboard-metric-head"><span>知識未命中率</span><span class="dashboard-metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 5.5v16M15 10l4 4M19 10l-4 4"/></svg></span></div><strong id="dashboard-fallback">—</strong><small>可用來安排知識補強</small></div>
+        <div class="dashboard-metric"><div class="dashboard-metric-head"><span>轉真人需求</span><span class="dashboard-metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="2" y="13" width="4" height="6" rx="2"/><rect x="18" y="13" width="4" height="6" rx="2"/></svg></span></div><strong id="dashboard-handoffs">—</strong><small>需要人工協助的對話</small></div>
       </div>
       <div class="dashboard-section-title"><div><h2>今日工作台</h2><p>先處理需要人工介入的項目</p></div></div>
       <div class="dashboard-grid">

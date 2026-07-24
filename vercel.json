@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "crons": [
+    { "path": "/api/cron/retention", "schedule": "0 3 * * *" }
+  ],
   "functions": {
     "api/tts.js": { "maxDuration": 30 }
   },

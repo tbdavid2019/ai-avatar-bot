@@ -48,6 +48,7 @@
     font-size:13.5px; font-weight:600; line-height:1;
     transition:transform .12s, background .15s, filter .15s;
   }
+  .ctrl .ui-icon,.history-action .ui-icon { width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.9; }
   .ctrl:hover { background:rgba(255,255,255,.26); }
   .ctrl:active { transform:scale(.93); }
   .ctrl:focus-visible { outline:2px solid #fff; outline-offset:2px; }
@@ -145,7 +146,7 @@
       <div class="history-head">
         <div class="history-title">聊天紀錄<span class="history-note">只保留在這次開啟期間</span></div>
         <button class="history-action" id="btn-history-clear" type="button">清除</button>
-        <button class="history-action" id="btn-history-close" type="button" aria-label="關閉聊天紀錄">✕</button>
+        <button class="history-action" id="btn-history-close" type="button" aria-label="關閉聊天紀錄"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
       <div id="history-list" role="log" aria-live="polite"></div>
     </section>
@@ -153,17 +154,17 @@
       <div id="voice-live" role="status" aria-live="polite"><span class="voice-dot" aria-hidden="true"></span><span id="voice-status">即時語音待命</span><span class="voice-meter" aria-hidden="true"><i id="voice-level"></i></span></div>
       <div class="dock-row">
         <input id="type-input" type="text" maxlength="200" placeholder="打字問我也可以…" aria-label="輸入文字問題" />
-        <button class="ctrl primary" id="btn-send" aria-label="送出文字問題"><span aria-hidden="true">➤</span></button>
+        <button class="ctrl primary" id="btn-send" aria-label="送出文字問題"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/></svg></button>
       </div>
       <div class="dock-row" role="toolbar" aria-label="虛擬人控制列">
-      <button class="ctrl primary" id="btn-mic" aria-label="開始即時語音對話" aria-pressed="false"><span aria-hidden="true">🎙️</span> 即時</button>
+      <button class="ctrl primary" id="btn-mic" aria-label="開始即時語音對話" aria-pressed="false"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg> 即時</button>
       <button class="ctrl" id="btn-engine" aria-label="切換 2D / 3D 角色" style="display:none">2D／3D</button>
-      <button class="ctrl" id="btn-llm"   aria-label="啟用瀏覽器內 AI 大腦（首次需下載模型）" aria-pressed="false"><span aria-hidden="true">🧠</span></button>
-      <button class="ctrl" id="btn-mute"  aria-label="靜音" aria-pressed="false"><span aria-hidden="true">🔊</span></button>
+      <button class="ctrl" id="btn-llm"   aria-label="啟用瀏覽器內 AI 大腦（首次需下載模型）" aria-pressed="false"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a3 3 0 0 0-5.7 1.3A4 4 0 0 0 5 14a3.5 3.5 0 0 0 3 5.3A4 4 0 0 0 16 19a3.5 3.5 0 0 0 3-5.3A4 4 0 0 0 17.7 6.3A3 3 0 0 0 12 5z"/><path d="M12 5v14M9 9h.01M15 9h.01M9 15h.01M15 15h.01"/></svg></button>
+      <button class="ctrl" id="btn-mute"  aria-label="靜音" aria-pressed="false"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 5.5a9 9 0 0 1 0 13"/></svg></button>
       <button class="ctrl" id="btn-speed" aria-label="調整語速">1.0×</button>
       <button class="ctrl" id="btn-lang" aria-label="切換對話語言">中</button>
-      <button class="ctrl" id="btn-history" aria-label="開啟聊天紀錄" aria-expanded="false"><span aria-hidden="true">☰</span></button>
-      <button class="ctrl" id="btn-close" aria-label="收起助理"><span aria-hidden="true">✕</span></button>
+      <button class="ctrl" id="btn-history" aria-label="開啟聊天紀錄" aria-expanded="false"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+      <button class="ctrl" id="btn-close" aria-label="收起助理"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
     </div>
   </div>
@@ -264,6 +265,14 @@
   })();
   const POINTER_LOOK = !/^(0|false|off|no)$/i.test((CFG.get('look') || '').trim());
   const TTS_ENDPOINT = CFG.get('api') || 'api/tts';   // 沒設→試同站相對路徑；抓不到→自動退回瀏覽器語音（純前端可用）
+  const TTS_TOKEN_ENDPOINT = (function () {
+    try {
+      const url = new URL(TTS_ENDPOINT, location.href);
+      url.pathname = /\/tts\/?$/i.test(url.pathname) ? url.pathname.replace(/\/tts\/?$/i, '/tts-token') : '/api/tts-token';
+      url.search = ''; url.hash = '';
+      return url.href;
+    } catch (e) { return ''; }
+  })();
   const KNOWLEDGE_URL = CFG.get('knowledge') || '';
   const HANDOFF_ENDPOINT = (function () {
     if (!CFG.get('handoff')) return '';
@@ -1079,6 +1088,23 @@
   }
 
   // edge-tts 神經語音：抓 /api/tts 的 MP3 → AudioBuffer（給佇列預抓用）
+  let ttsToken = '', ttsTokenExpiresAt = 0, ttsTokenPromise = null;
+  async function getTTSToken() {
+    if (!TTS_TOKEN_ENDPOINT) throw new Error('tts token endpoint unavailable');
+    if (ttsToken && Date.now() < ttsTokenExpiresAt - 10000) return ttsToken;
+    if (ttsTokenPromise) return ttsTokenPromise;
+    ttsTokenPromise = fetch(TTS_TOKEN_ENDPOINT, {
+      method:'POST', headers:{ 'Content-Type':'application/json' }, credentials:'omit', cache:'no-store'
+    }).then(async (response) => {
+      if (!response.ok) throw new Error('tts token http ' + response.status);
+      const result = await response.json();
+      if (!result || typeof result.token !== 'string' || !result.token) throw new Error('tts token invalid');
+      ttsToken = result.token;
+      ttsTokenExpiresAt = Date.now() + Math.max(10, Number(result.expiresIn) || 60) * 1000;
+      return ttsToken;
+    }).finally(() => { ttsTokenPromise = null; });
+    return ttsTokenPromise;
+  }
   async function fetchTTSBuffer(text, persistent) {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     // 預載發生在使用者互動前，不能等待 autoplay 鎖住的 resume；音檔可先抓取與解碼，點擊時再恢復播放。
@@ -1087,9 +1113,10 @@
     if (!persistent) _ttsControllers.add(controller);
     const timer = setTimeout(() => controller.abort(), 15000);
     try {
+      const token = await getTTSToken();
       const resp = await fetch(TTS_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization:'Bearer ' + token },
         body: JSON.stringify({ voice: neuralVoice, text }),
         signal: controller.signal,
       });
@@ -2067,7 +2094,12 @@
   document.getElementById('btn-mute').onclick  = () => {
     ttsMuted = !ttsMuted;
     const mb = document.getElementById('btn-mute');
-    mb.textContent = ttsMuted ? '🔇' : '🔊';
+    mb.replaceChildren();
+    const mutedIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    mutedIcon.setAttribute('class', 'ui-icon'); mutedIcon.setAttribute('viewBox', '0 0 24 24'); mutedIcon.setAttribute('aria-hidden', 'true');
+    const mutedPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    mutedPath.setAttribute('d', ttsMuted ? 'M11 5 6 9H3v6h3l5 4zM16 9l5 5M21 9l-5 5' : 'M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18 5.5a9 9 0 0 1 0 13');
+    mutedIcon.appendChild(mutedPath); mb.appendChild(mutedIcon);
     mb.setAttribute('aria-pressed', String(ttsMuted));
     if (ttsMuted) {
       stopSpeaking(); // 立刻停掉正在播的（神經語音 + 瀏覽器語音）
@@ -2086,7 +2118,7 @@
     // 啟用本機 Ollama 模式時：🧠 用來顯示狀態 / 重新連線，不下載 WebLLM
     if (window.OLLAMA && window.OLLAMA.enabled) {
       const ok = window.OLLAMA.ready || await window.OLLAMA.ping();
-      btn.textContent = ok ? '🧠本機' : '🧠✗'; btn.classList.toggle('llm-on', ok);
+      btn.textContent = ok ? '本機' : '失敗'; btn.classList.toggle('llm-on', ok);
       btn.setAttribute('aria-pressed', String(ok));
       showBubble(ok ? ('本機 AI 大腦運作中（' + window.OLLAMA.model + '）🧠') : '本機 Ollama 連不上：確認 Ollama 在跑、且 OLLAMA_ORIGINS 已允許這個網站。');
       return;
@@ -2096,21 +2128,21 @@
     if (window.LLM.state === 'loading') { showBubble('AI 大腦載入中… ' + Math.round(window.LLM.progress * 100) + '%'); return; }
     showBubble('開始下載 AI 大腦（約 1GB，只需第一次）…');
     try {
-      await window.LLM.load((p) => { btn.textContent = '🧠 ' + Math.round((p.progress || 0) * 100) + '%'; });
-      btn.textContent = '🧠✓'; btn.classList.add('llm-on');
+      await window.LLM.load((p) => { btn.textContent = Math.round((p.progress || 0) * 100) + '%'; });
+      btn.textContent = '已啟用'; btn.classList.add('llm-on');
       btn.setAttribute('aria-pressed', 'true');
       speak('AI 大腦啟用完成，現在我可以聊得更自然囉！');
-    } catch (e) { btn.textContent = '🧠✗'; showBubble('AI 大腦載入失敗：' + (e && e.message || e)); }
+    } catch (e) { btn.textContent = '失敗'; showBubble('AI 大腦載入失敗：' + (e && e.message || e)); }
   };
 
   // 啟用本機 Ollama 時：開機 ping 一下，連上就把 🧠 切成「本機大腦」狀態
   (async function initOllama() {
     if (!window.OLLAMA || !window.OLLAMA.enabled) return;
     const btn = document.getElementById('btn-llm');
-    if (btn) { btn.textContent = '🧠…'; btn.title = '本機 Ollama 大腦（連線中）'; }
+    if (btn) { btn.textContent = '連線中'; btn.title = '本機 Ollama 大腦（連線中）'; }
     const ok = await window.OLLAMA.ping();
     if (btn) {
-      btn.textContent = ok ? '🧠本機' : '🧠✗';
+      btn.textContent = ok ? '本機' : '失敗';
       btn.classList.toggle('llm-on', ok);
       btn.setAttribute('aria-pressed', String(ok));
       btn.title = ok ? ('本機 Ollama：已連線 ' + window.OLLAMA.model) : '本機 Ollama 連不上（檢查 Ollama 是否在跑 / CORS）';

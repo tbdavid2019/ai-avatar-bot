@@ -276,7 +276,14 @@
   bubble.type = 'button';
   bubble.className = 'aw-bubble';
   bubble.setAttribute('aria-label', '開啟 AI 虛擬人助理');
-  bubble.textContent = '💬';
+  var bubbleIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  bubbleIcon.setAttribute('viewBox', '0 0 24 24');
+  bubbleIcon.setAttribute('aria-hidden', 'true');
+  bubbleIcon.style.cssText = 'width:29px;height:29px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;';
+  var bubbleIconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  bubbleIconPath.setAttribute('d', 'M20 11.5a7.5 7.5 0 0 1-8 7.48L7 21v-2.7A7.5 7.5 0 1 1 20 11.5zM8 11h.01M12 11h.01M16 11h.01');
+  bubbleIcon.appendChild(bubbleIconPath);
+  bubble.appendChild(bubbleIcon);
   bubble.style.cssText = [
     'position:absolute', 'right:2px', 'bottom:2px', 'width:64px', 'height:64px',
     'border:0', 'border-radius:50%', 'cursor:pointer', 'font-size:28px',
